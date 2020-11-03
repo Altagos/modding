@@ -1,6 +1,5 @@
-use ron::de::from_reader;
 use serde::{Deserialize, Serialize};
-use std::fs;
+use crate::util::deserialize_file;
 
 #[derive(Clone, Debug, Deserialize, Default, Serialize)]
 pub struct Info {
@@ -14,8 +13,7 @@ pub struct Info {
 }
 
 impl Info {
-    pub fn load(path: &str) -> Self {
-        let file = fs::File::open(path).expect("No info.ron file present");
-        from_reader(file).expect("Invalid info.ron file")
+    pub fn load(path: &str) -> Info {
+        deserialize_file::<Info>(path).expect("No info.ron file present or invalid info.ron file")
     }
 }

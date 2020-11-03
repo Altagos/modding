@@ -10,3 +10,7 @@ edition = "2018"
 serde = { version = "1.0", features = ["derive"] }
 ron = "0.6.2"
 walkdir = "2"
+
+[dependencies.rhai]
+version = "0.19.3"
+features = ["sync"]
