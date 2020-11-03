@@ -1,4 +1,5 @@
+pub mod info;
+pub mod language;
 pub mod module;
-mod info;
-mod language;
-mod paths;
+pub mod paths;
+pub mod base_mod;
