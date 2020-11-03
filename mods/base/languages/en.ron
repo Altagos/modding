@@ -1,6 +1,0 @@
-(
-    name: "en",
-    def: {
-        "ready": "Hello and welcome back",
-    }
-)
