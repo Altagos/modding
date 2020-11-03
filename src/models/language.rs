@@ -9,6 +9,6 @@ pub struct BaseLanguage {
 
 impl BaseLanguage {
     pub fn get(&self, k: &str) -> &String {
-        self.def.get(k).expect(&*format!("Invalid Language, `{}` not defined", k))
+        self.def.get(k).expect(&*format!("Base Language not complete, `{}` not defined", k))
     }
 }
