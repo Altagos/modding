@@ -3,6 +3,7 @@ use crate::models::language::Language;
 use crate::models::paths::Paths;
 use crate::{models::info::Info, traits::ModuleComponent};
 use serde::{Deserialize, Serialize};
+use tracing::{debug, info};
 use std::collections::HashMap;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -19,18 +20,18 @@ pub struct Mod {
 impl Mod {
     pub fn load(path: &Path) -> Self {
         let mut module = Mod::default();
-        tracing::info!("Loading mod `{}`...", path.display());
+        debug!("Loading mod `{}`...", path.display());
 
         module.mod_dir = path.to_str().unwrap().to_string();
         module.info = Info::load(format!("{}/info.ron", path.to_str().unwrap()).as_str());
-        tracing::info!("Building paths for mod: `{}`", module.info.name);
+        debug!("Building paths for mod: `{}`", module.info.name);
         module.build_paths(path);
-        tracing::info!("Loading languages from mod: `{}`", module.info.name);
+        debug!("Loading languages from mod: `{}`", module.info.name);
         module.load_languages();
-        tracing::info!("Loading commands from mod: `{}`", module.info.name);
+        debug!("Loading commands from mod: `{}`", module.info.name);
         module.load_commands();
 
-        tracing::info!("Loaded mod `{}`...", module.info.name);
+        info!("Loaded mod `{}`", module.info.name);
         module
     }
 
@@ -41,7 +42,7 @@ impl Mod {
 
         paths.info = "/info.ron".to_string();
 
-        tracing::debug!("Building laguage paths...");
+        debug!("Building laguage paths...");
 
         if info.languages_path.is_some() {
             let languages_path = info.languages_path.unwrap();
@@ -52,7 +53,7 @@ impl Mod {
                 if entry.path().is_file() {
                     let c_path = entry.path().to_str().unwrap();
                     if c_path.ends_with(".ron") {
-                        tracing::debug!("Language: {}", entry.path().display());
+                        debug!("Language: {}", entry.path().display());
                         let lang = Language::load(entry.path().to_str().unwrap());
 
                         paths.languages.insert(
@@ -74,8 +75,8 @@ impl Mod {
             }
         }
 
-        tracing::debug!("Finished building laguage paths");
-        tracing::debug!("Building command paths...");
+        debug!("Finished building laguage paths");
+        debug!("Building command paths...");
 
         if info.commands_path.is_some() {
             let commands_path = info.commands_path.unwrap();
@@ -87,7 +88,7 @@ impl Mod {
                 if entry.path().is_file() {
                     let c_path = entry.path().to_str().unwrap();
                     if c_path.ends_with(".ron") {
-                        tracing::debug!("Command: {}", entry.path().display());
+                        debug!("Command: {}", entry.path().display());
                         let command = Command::load(entry.path().to_str().unwrap());
 
                         paths.commands.insert(
@@ -101,7 +102,7 @@ impl Mod {
             }
         }
 
-        tracing::debug!("Finished building command paths");
+        debug!("Finished building command paths");
 
         self.paths = paths;
     }
@@ -109,7 +110,7 @@ impl Mod {
     pub fn load_languages(&mut self) {
         let paths = self.paths.languages.clone();
         for (name, path) in paths {
-            tracing::debug!("Loading language: `{}`", name);
+            debug!("Loading language: `{}`", name);
             self.languages.insert(
                 name,
                 Language::load(format!("{}{}", &self.mod_dir, path).as_str()),
@@ -120,7 +121,7 @@ impl Mod {
     pub fn load_commands(&mut self) {
         let paths = self.paths.commands.clone();
         for (name, path) in paths {
-            tracing::debug!("Loading command: `{}`", name);
+            debug!("Loading command: `{}`", name);
             self.commands.insert(
                 name,
                 Command::load(format!("{}{}", &self.mod_dir, path).as_str()),

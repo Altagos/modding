@@ -18,18 +18,18 @@ pub struct BaseMod {
 impl BaseMod {
     pub fn load(path: &Path) -> Self {
         let mut base = Self::default();
-        tracing::info!("Loading mod `{}`...", path.display());
+        tracing::debug!("Loading base mod `{}`...", path.display());
 
         base.mod_dir = path.to_str().unwrap().to_string();
         base.info = Info::load(format!("{}/info.ron", path.to_str().unwrap()).as_str());
-        tracing::info!("Building paths for mod: `{}`", base.info.name);
+        tracing::debug!("Building paths for the base mod");
         base.build_paths(path);
-        tracing::info!("Loading languages from mod: `{}`", base.info.name);
+        tracing::debug!("Loading languages from the base mod");
         base.load_languages();
-        tracing::info!("Loading commands from mod: `{}`", base.info.name);
+        tracing::debug!("Loading commands from the base mod");
         base.load_commands();
 
-        tracing::info!("Loaded mod `{}`...", base.info.name);
+        tracing::info!("Loaded base mod");
 
         base
     }
