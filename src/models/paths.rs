@@ -10,21 +10,8 @@ pub struct Paths {
     pub commands: HashMap<String, String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Default, Serialize)]
-pub struct BasePaths {
-    pub languages: HashMap<String, String>,
-    pub commands: HashMap<String, String>,
-}
-
 impl ModuleComponent for Paths {
     fn load(path: &str) -> Self where for<'de> Self: Deserialize<'de> {
         crate::util::deserialize_file::<Self>(path).expect("Invalid paths.ron file")
     }
 }
-
-impl ModuleComponent for BasePaths {
-    fn load(path: &str) -> Self where for<'de> Self: Deserialize<'de> {
-        crate::util::deserialize_file::<Self>(path).expect("Invalid paths.ron file")
-    }
-}
-
