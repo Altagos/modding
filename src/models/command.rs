@@ -1,6 +1,8 @@
-use rhai::{Engine, Scope};
+use std::fmt::Display;
+
+use rhai::{Engine, RegisterFn, Scope};
 use serde::{Deserialize, Serialize};
-use serenity::{client::Context as SerenityCtx, model::channel::Message as SerenityMsg};
+use serenity::{http::CacheHttp, client::Context as SerenityCtx, model::channel::Message as SerenityMsg};
 use crate::{error::CommandResult, traits::ModuleComponent, util::deserialize_file};
 
 #[derive(Clone, Debug, Deserialize, Default, Serialize)]
@@ -28,6 +30,10 @@ impl Message {
     pub fn content(&mut self) -> String {
         self.msg.content.clone()
     }
+
+    fn reply(&self, ctx: SerenityCtx, content: &str) {
+        self.msg.reply(ctx, content);
+    }
 }
 
 impl Command {
@@ -39,6 +45,7 @@ impl Command {
         engine.register_get("id", Message::id);
         engine.register_get("author_id", Message::author_id);
         engine.register_get("content", Message::content);
+        engine.register_fn("reply", Message::reply);
 
         let mut scope = Scope::new();
 
