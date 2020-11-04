@@ -48,7 +48,9 @@ impl Command {
         engine.register_custom_operator("reply", 255).unwrap();
         engine.register_fn("reply", move |m: Message, content: (SerenityCtx, String)| {
             tokio::spawn(async move {
+                tracing::debug!("Trying to send message...");
                 m.reply(content.0, content.1).await;
+                tracing::debug!("Sended message");
             });
         });
 
