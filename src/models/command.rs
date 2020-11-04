@@ -31,13 +31,13 @@ impl Message {
         self.msg.content.clone()
     }
 
-    fn reply(&mut self, ctx: SerenityCtx, content: &str) {
-        self.msg.reply(ctx, content);
+    async fn reply(&self, ctx: SerenityCtx, content: String) {
+        self.msg.reply(ctx, content).await.unwrap();
     }
 }
 
 impl Command {
-    pub fn run(&self, ctx: SerenityCtx, msg: SerenityMsg) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
+    pub async fn run(&self, ctx: SerenityCtx, msg: SerenityMsg) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
         tracing::debug!("Running command: `{}`", self.name);
         let mut engine = Engine::new();
         engine.register_type::<SerenityCtx>();
@@ -45,7 +45,18 @@ impl Command {
         engine.register_get("id", Message::id);
         engine.register_get("author_id", Message::author_id);
         engine.register_get("content", Message::content);
-        engine.register_fn("reply", Message::reply);
+        engine.register_custom_operator("reply", 255).unwrap();
+        engine.register_fn("reply", move |m: Message, content: (SerenityCtx, String)| {
+            tokio::spawn(async move {
+                m.reply(content.0, content.1).await;
+            });
+        });
+
+        // fn reply(c: SerenityCtx, content: &str) {
+        //     tokio::spawn(async move || {
+                
+        //     });
+        // }
 
         let mut scope = Scope::new();
 
