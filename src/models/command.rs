@@ -12,7 +12,7 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn run(&self, ctx: &'static Context, msg: &'static Message) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
+    pub fn run(&self, ctx: Context, msg: Message) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
         let engine = Engine::new();
         let mut scope = Scope::new();
 
