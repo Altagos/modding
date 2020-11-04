@@ -31,7 +31,7 @@ impl Message {
         self.msg.content.clone()
     }
 
-    fn reply(&self, ctx: SerenityCtx, content: &str) {
+    fn reply(&mut self, ctx: SerenityCtx, content: &str) {
         self.msg.reply(ctx, content);
     }
 }
