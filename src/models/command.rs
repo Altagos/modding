@@ -20,15 +20,8 @@ impl Command {
         engine.on_print(|x| println!("hello: {}", x));
         engine.on_debug(|x| println!("DEBUG: {}", x));
 
-        let ast = match engine.compile(self.command.as_str()) {
-            Ok(x) => x,
-            Err(e) => return CommandResult::Err(e.into()),
-        };
-
-        let _: () = match engine.call_fn(&mut scope, &ast, "main", (ctx, msg)) {
-            Ok(x) => x,
-            Err(e) => return CommandResult::Err(e.into()),
-        };
+        let ast = engine.compile(self.command.as_str()).unwrap();
+        let _result: () = engine.call_fn(&mut scope, &ast, "main", (ctx, msg)).unwrap();
 
         tracing::debug!("Running command `{}` was successfull", self.name);
         CommandResult::Success
