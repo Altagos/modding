@@ -1,6 +1,6 @@
 use rhai::{Engine, Scope};
 use serde::{Deserialize, Serialize};
-use serenity::{client::Context, model::channel::Message};
+use serenity::{client::Context as SerenityCtx, model::channel::Message as SerenityMsg};
 use crate::{error::CommandResult, traits::ModuleComponent, util::deserialize_file};
 
 #[derive(Clone, Debug, Deserialize, Default, Serialize)]
@@ -11,17 +11,32 @@ pub struct Command {
     pub command: String,
 }
 
+#[derive(Clone)]
+struct Message {
+    msg: SerenityMsg,
+}
+
+impl Message {
+    pub fn content(&mut self) -> String {
+        self.msg.content.clone()
+    }
+}
+
 impl Command {
-    pub fn run(&self, ctx: Context, msg: Message) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
+    pub fn run(&self, ctx: SerenityCtx, msg: SerenityMsg) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
         tracing::debug!("Running command: `{}`", self.name);
         let mut engine = Engine::new();
+        engine.register_type::<SerenityCtx>();
+        engine.register_type::<Message>();
+        engine.register_get("content", Message::content);
+
         let mut scope = Scope::new();
 
         engine.on_print(|x| println!("hello: {}", x));
         engine.on_debug(|x| println!("DEBUG: {}", x));
 
         let ast = engine.compile(self.command.as_str()).unwrap();
-        let _result: () = engine.call_fn(&mut scope, &ast, self.name.as_str(), (ctx, msg)).unwrap();
+        let _result: () = engine.call_fn(&mut scope, &ast, self.name.as_str(), (ctx, Message { msg })).unwrap();
 
         tracing::debug!("Running command `{}` was successfull", self.name);
         CommandResult::Success
