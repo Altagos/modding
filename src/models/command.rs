@@ -21,7 +21,7 @@ impl Command {
         engine.on_debug(|x| println!("DEBUG: {}", x));
 
         let ast = engine.compile(self.command.as_str()).unwrap();
-        let _result: () = engine.call_fn(&mut scope, &ast, "main", (ctx, msg)).unwrap();
+        let _result: () = engine.call_fn(&mut scope, &ast, self.name.as_str(), (ctx, msg)).unwrap();
 
         tracing::debug!("Running command `{}` was successfull", self.name);
         CommandResult::Success
