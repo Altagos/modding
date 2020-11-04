@@ -17,3 +17,16 @@ dotenv = "0.15.0"
 [dependencies.rhai]
 version = "0.19.3"
 features = ["sync"]
+
+[dependencies.serenity]
+git = "https://github.com/serenity-rs/serenity"
+branch = "current"
+#version = "0.9.0-rc.2"
+default-features = false
+features = [
+    "client",
+    "gateway",
+    "http",
+    "model",
+    "rustls_backend",
+]

@@ -1,5 +1,7 @@
+use rhai::{Engine, Scope};
 use serde::{Deserialize, Serialize};
-use crate::{traits::ModuleComponent, util::deserialize_file};
+use serenity::{client::Context, model::channel::Message};
+use crate::{error::CommandResult, traits::ModuleComponent, util::deserialize_file};
 
 #[derive(Clone, Debug, Deserialize, Default, Serialize)]
 pub struct Command {
@@ -7,6 +9,25 @@ pub struct Command {
     pub aliases: Option<Vec<String>>,
     pub description: String,
     pub command: String,
+}
+
+impl Command {
+    fn run(&self, ctx: &'static Context, msg: &'static Message) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
+        let engine = Engine::new();
+        let mut scope = Scope::new();
+
+        let ast = match engine.compile(self.command.as_str()) {
+            Ok(x) => x,
+            Err(e) => return CommandResult::Err(e.into()),
+        };
+
+        let _: () = match engine.call_fn(&mut scope, &ast, "main", (ctx, msg)) {
+            Ok(x) => x,
+            Err(e) => return CommandResult::Err(e.into()),
+        };
+
+        CommandResult::Success
+    }
 }
 
 impl ModuleComponent for Command {
