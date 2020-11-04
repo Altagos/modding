@@ -17,6 +17,14 @@ struct Message {
 }
 
 impl Message {
+    pub fn id(&mut self) -> u64 {
+        self.msg.id.0.clone()
+    }
+
+    pub fn author_id(&mut self) -> u64 {
+        self.msg.author.id.0.clone()
+    }
+
     pub fn content(&mut self) -> String {
         self.msg.content.clone()
     }
@@ -28,6 +36,8 @@ impl Command {
         let mut engine = Engine::new();
         engine.register_type::<SerenityCtx>();
         engine.register_type::<Message>();
+        engine.register_get("id", Message::id);
+        engine.register_get("author_id", Message::author_id);
         engine.register_get("content", Message::content);
 
         let mut scope = Scope::new();
