@@ -13,6 +13,7 @@ pub struct Command {
 
 impl Command {
     pub fn run(&self, ctx: Context, msg: Message) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
+        tracing::debug!("Running command: `{}`", self.name);
         let mut engine = Engine::new();
         let mut scope = Scope::new();
 
@@ -29,6 +30,7 @@ impl Command {
             Err(e) => return CommandResult::Err(e.into()),
         };
 
+        tracing::debug!("Running command `{}` was successfull", self.name);
         CommandResult::Success
     }
 }
