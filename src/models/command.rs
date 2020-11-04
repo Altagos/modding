@@ -13,8 +13,11 @@ pub struct Command {
 
 impl Command {
     pub fn run(&self, ctx: Context, msg: Message) -> CommandResult<(), Box<dyn std::error::Error + '_>> {
-        let engine = Engine::new();
+        let mut engine = Engine::new();
         let mut scope = Scope::new();
+
+        engine.on_print(|x| println!("hello: {}", x));
+        engine.on_debug(|x| println!("DEBUG: {}", x));
 
         let ast = match engine.compile(self.command.as_str()) {
             Ok(x) => x,
